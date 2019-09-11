@@ -13,22 +13,27 @@ import models
 from metrics import AverageMeter, Result
 import utils
 
+from modelsize_estimate import modelsize
+
 args = utils.parse_command()
 print(args)
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu # Set the GPU.
 
-fieldnames = ['rmse', 'mae', 'delta1', 'absrel',
+fieldnames = ['rmse', 'irmse', 'mae', 'delta1', 'absrel',
             'lg10', 'mse', 'delta2', 'delta3', 'data_time', 'gpu_time']
 best_fieldnames = ['best_epoch'] + fieldnames
 best_result = Result()
 best_result.set_to_worst()
+
+cpu = args.gpu in ['-1', '']
 
 def main():
     global args, best_result, output_directory, train_csv, test_csv
 
     # Data loading code
     print("=> creating data loaders...")
-    valdir = os.path.join('..', 'data', args.data, 'val')
+    valdir = "/mnt/06e9a677-7e53-4230-9208-c934654a74eb/nyu-depth/preprocessed/nyudepthv2/val"
+    #os.path.join('..', 'data', args.data, 'val')
 
     if args.data == 'nyudepthv2':
         from dataloaders.nyu import NYUDataset
@@ -46,7 +51,10 @@ def main():
         assert os.path.isfile(args.evaluate), \
         "=> no model found at '{}'".format(args.evaluate)
         print("=> loading model '{}'".format(args.evaluate))
-        checkpoint = torch.load(args.evaluate)
+        if cpu:
+            checkpoint = torch.load(args.evaluate, map_location='cpu')
+        else:
+            checkpoint = torch.load(args.evaluate)
         if type(checkpoint) is dict:
             args.start_epoch = checkpoint['epoch']
             best_result = checkpoint['best_result']
@@ -55,7 +63,7 @@ def main():
         else:
             model = checkpoint
             args.start_epoch = 0
-        output_directory = os.path.dirname(args.evaluate)
+        output_directory = "results" #os.path.dirname(args.evaluate)
         validate(val_loader, model, args.start_epoch, write_to_file=False)
         return
 
@@ -63,18 +71,26 @@ def main():
 def validate(val_loader, model, epoch, write_to_file=True):
     average_meter = AverageMeter()
     model.eval() # switch to evaluate mode
+
+    modelsize(model, torch.FloatTensor(1,3,224,224))
     end = time.time()
     for i, (input, target) in enumerate(val_loader):
-        input, target = input.cuda(), target.cuda()
-        # torch.cuda.synchronize()
+        if not cpu:
+            input, target = input.cuda(), target.cuda()
+            torch.cuda.synchronize()
+        else:
+            input, target = input.cpu(), target.cpu()
         data_time = time.time() - end
 
         # compute output
+        if not cpu:
+            torch.cuda.synchronize()
         end = time.time()
         with torch.no_grad():
             pred = model(input)
-        # torch.cuda.synchronize()
-        gpu_time = time.time() - end
+        if not cpu:
+            torch.cuda.synchronize()
+        gpu_time = 1000 * (time.time() - end)
 
         # measure accuracy and record loss
         result = Result()
@@ -98,25 +114,30 @@ def validate(val_loader, model, epoch, write_to_file=True):
             utils.save_image(img_merge, filename)
 
         if (i+1) % args.print_freq == 0:
+            d = 'GPU' if not cpu else 'CPU'
             print('Test: [{0}/{1}]\t'
-                  't_GPU={gpu_time:.3f}({average.gpu_time:.3f})\n\t'
+                  't_'+d+'={gpu_time:.3f}(avg={average.gpu_time:.3f}) ms\n\t'
                   'RMSE={result.rmse:.2f}({average.rmse:.2f}) '
+                  'IRMSE={result.irmse:.2f}({average.irmse:.2f}) '
                   'MAE={result.mae:.2f}({average.mae:.2f}) '
                   'Delta1={result.delta1:.3f}({average.delta1:.3f}) '
                   'REL={result.absrel:.3f}({average.absrel:.3f}) '
                   'Lg10={result.lg10:.3f}({average.lg10:.3f}) '.format(
-                   i+1, len(val_loader), gpu_time=gpu_time, result=result, average=average_meter.average()))
+                   i+1, len(val_loader), gpu_time=gpu_time, 
+                   result=result, average=average_meter.average()))
 
     avg = average_meter.average()
 
     print('\n*\n'
         'RMSE={average.rmse:.3f}\n'
+        'IRMSE={average.irmse:.3f}\n'
         'MAE={average.mae:.3f}\n'
         'Delta1={average.delta1:.3f}\n'
         'REL={average.absrel:.3f}\n'
         'Lg10={average.lg10:.3f}\n'
         't_GPU={time:.3f}\n'.format(
         average=avg, time=avg.gpu_time))
+        
 
     if write_to_file:
         with open(test_csv, 'a') as csvfile:

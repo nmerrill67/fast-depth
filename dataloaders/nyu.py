@@ -8,7 +8,8 @@ class NYUDataset(MyDataloader):
     def __init__(self, root, split, modality='rgb'):
         self.split = split
         super(NYUDataset, self).__init__(root, split, modality)
-        self.output_size = (224, 224)
+        #self.output_size = (224, 224)
+        self.output_size = (112, 112)
 
     def is_image_file(self, filename):
         # IMG_EXTENSIONS = ['.h5']

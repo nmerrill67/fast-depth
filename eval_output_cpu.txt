@@ -1,0 +1,44 @@
+Namespace(cuda=True, data='nyudepthv2', evaluate='mobilenet-nnconv5dw-skipadd-pruned.pth.tar', gpu='-1', modality='rgb', print_freq=50, workers=16)
+=> creating data loaders...
+=> data loaders created.
+=> loading model 'mobilenet-nnconv5dw-skipadd-pruned.pth.tar'
+=> loaded best model (epoch 15)
+Model MobileNetSkipAdd : params: 5.503432M
+Model MobileNetSkipAdd : intermedite variables: 36.305864 M (without backward)
+Model MobileNetSkipAdd : intermedite variables: 72.611728 M (with backward)
+Test: [{0}/{1}]	t_CPU=67.617(avg=68.072) ms
+	RMSE=0.50(0.85) IRMSE=0.19(0.11) MAE=0.38(0.63) Delta1=0.759(0.671) REL=0.234(0.205) Lg10=0.084(0.087) 
+Test: [{0}/{1}]	t_CPU=67.153(avg=67.468) ms
+	RMSE=0.41(0.65) IRMSE=0.08(0.12) MAE=0.34(0.49) Delta1=0.817(0.715) REL=0.149(0.197) Lg10=0.061(0.080) 
+Test: [{0}/{1}]	t_CPU=66.887(avg=67.789) ms
+	RMSE=0.95(0.67) IRMSE=0.12(0.11) MAE=0.80(0.50) Delta1=0.577(0.735) REL=0.218(0.182) Lg10=0.114(0.076) 
+Test: [{0}/{1}]	t_CPU=67.642(avg=67.638) ms
+	RMSE=0.69(0.64) IRMSE=0.21(0.11) MAE=0.42(0.47) Delta1=0.758(0.746) REL=0.224(0.175) Lg10=0.083(0.073) 
+Test: [{0}/{1}]	t_CPU=66.195(avg=67.521) ms
+	RMSE=0.32(0.62) IRMSE=0.07(0.11) MAE=0.25(0.45) Delta1=0.894(0.753) REL=0.100(0.172) Lg10=0.045(0.072) 
+Test: [{0}/{1}]	t_CPU=66.622(avg=67.453) ms
+	RMSE=1.06(0.61) IRMSE=0.45(0.13) MAE=0.90(0.44) Delta1=0.219(0.745) REL=0.780(0.176) Lg10=0.222(0.073) 
+Test: [{0}/{1}]	t_CPU=66.747(avg=67.395) ms
+	RMSE=0.61(0.61) IRMSE=0.20(0.14) MAE=0.46(0.44) Delta1=0.613(0.747) REL=0.262(0.177) Lg10=0.092(0.073) 
+Test: [{0}/{1}]	t_CPU=67.476(avg=67.408) ms
+	RMSE=0.31(0.62) IRMSE=0.03(0.15) MAE=0.21(0.44) Delta1=0.983(0.749) REL=0.059(0.179) Lg10=0.027(0.073) 
+Test: [{0}/{1}]	t_CPU=68.113(avg=67.440) ms
+	RMSE=0.22(0.60) IRMSE=0.04(0.14) MAE=0.19(0.43) Delta1=0.989(0.755) REL=0.080(0.176) Lg10=0.034(0.072) 
+Test: [{0}/{1}]	t_CPU=67.967(avg=67.502) ms
+	RMSE=0.19(0.58) IRMSE=0.06(0.14) MAE=0.16(0.42) Delta1=0.980(0.764) REL=0.088(0.171) Lg10=0.038(0.070) 
+Test: [{0}/{1}]	t_CPU=66.908(avg=67.549) ms
+	RMSE=0.39(0.58) IRMSE=0.12(0.15) MAE=0.32(0.42) Delta1=0.789(0.769) REL=0.163(0.167) Lg10=0.065(0.069) 
+Test: [{0}/{1}]	t_CPU=67.947(avg=67.644) ms
+	RMSE=0.71(0.59) IRMSE=0.05(0.15) MAE=0.56(0.42) Delta1=0.815(0.772) REL=0.120(0.165) Lg10=0.057(0.068) 
+Test: [{0}/{1}]	t_CPU=67.900(avg=67.655) ms
+	RMSE=0.73(0.60) IRMSE=0.10(0.14) MAE=0.49(0.43) Delta1=0.705(0.772) REL=0.175(0.165) Lg10=0.073(0.068) 
+
+*
+RMSE=0.604
+IRMSE=0.144
+MAE=0.429
+Delta1=0.771
+REL=0.165
+Lg10=0.069
+t_GPU=67.653
+

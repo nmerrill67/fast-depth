@@ -29,16 +29,19 @@ class Result(object):
         self.data_time, self.gpu_time = data_time, gpu_time
 
     def evaluate(self, output, target):
-        valid_mask = ((target>0) + (output>0)) > 0
 
-        output = 1e3 * output[valid_mask]
-        target = 1e3 * target[valid_mask]
+        invalid_mask = (output == 0)
+
         abs_diff = (output - target).abs()
 
         self.mse = float((torch.pow(abs_diff, 2)).mean())
         self.rmse = math.sqrt(self.mse)
         self.mae = float(abs_diff.mean())
-        self.lg10 = float((log10(output) - log10(target)).abs().mean())
+
+        abs_log_diff = (log10(output) - log10(target)).abs()
+        abs_log_diff[invalid_mask] = 0
+        self.lg10 = float(abs_log_diff.sum() / (invalid_mask == 0).sum())
+        assert not np.any(np.isinf(self.lg10))
         self.absrel = float((abs_diff / target).mean())
 
         maxRatio = torch.max(output / target, target / output)
@@ -51,7 +54,8 @@ class Result(object):
         inv_output = 1 / output
         inv_target = 1 / target
         abs_inv_diff = (inv_output - inv_target).abs()
-        self.irmse = math.sqrt((torch.pow(abs_inv_diff, 2)).mean())
+        abs_inv_diff[invalid_mask] = 0
+        self.irmse = math.sqrt((torch.pow(abs_inv_diff, 2)).sum() / (invalid_mask == 0).sum())
         self.imae = float(abs_inv_diff.mean())
 
 
