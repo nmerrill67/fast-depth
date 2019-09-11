@@ -7,11 +7,6 @@ This repo offers trained models and evaluation code for the [FastDepth](http://f
 	<img src="img/visualization.png" alt="photo not available" width="50%" height="50%">
 </p>
 
-<!-- This repo can be used for training and testing of
-- RGB (or grayscale image) based depth prediction
-- sparse depth based depth prediction
-- RGBd (i.e., both RGB and sparse depth) based depth prediction -->
-
 ## Contents
 0. [Requirements](#requirements)
 0. [Trained Models](#trained-models)
@@ -51,6 +46,9 @@ When downloading, save models to a `results` folder outside the repo directory:
   wget -r -np -nH --cut-dirs=2 --reject "index.html*" http://datasets.lids.mit.edu/fastdepth/results/
   cd ..
   ```
+### Pretrained MobileNet ###
+
+The model file for the pretrained MobileNet used in our model definition can be downloaded from [http://datasets.lids.mit.edu/fastdepth/imagenet/](http://datasets.lids.mit.edu/fastdepth/imagenet/).
 
 ## Evaluation ##
 
